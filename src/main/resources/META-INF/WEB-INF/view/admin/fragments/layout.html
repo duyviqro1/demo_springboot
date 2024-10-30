@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:layout="layout">
+<head>
+    <meta charset="UTF-8">
+    <title>Category Management</title>
+    <link th:href="@{/css/style.css}" rel="stylesheet">
+</head>
+<body>
+    <header th:replace="fragments/header :: header"></header>
+    <main>
+        <div th:insert="~{::content}"></div>
+    </main>
+    <footer th:replace="fragments/footer :: footer"></footer>
+</body>
+</html>

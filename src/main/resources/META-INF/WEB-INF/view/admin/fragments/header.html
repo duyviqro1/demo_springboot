@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:layout="layout">
+<head>
+<meta charset="UTF-8">
+<div th:fragment="header">
+	<img src="path_to_your_image" alt="Your Image" class="header-image">
+	<nav>
+		<a th:href="@{/categories}">Home</a> <a th:href="@{/categories/add}">Add
+			Category</a>
+	</nav>
+</div>

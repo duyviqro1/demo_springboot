@@ -36,7 +36,7 @@ public class CategoryController {
 		List<Category> list = categoryService.findAll();
 		model.addAttribute("list", list);
 
-		return "admin/category/list1";
+		return "admin/category/list";
 	}
 
 	@GetMapping("/add")
@@ -45,15 +45,15 @@ public class CategoryController {
 		category.setIsEdit(false);
 		model.addAttribute("category", category);
 
-		return "admin/category/add";
+		return "admin/category/addOrEdit";
 
 	}
 
-	@PostMapping("/save")
+	@PostMapping("/saveOrUpdate")
 	public ModelAndView saveOrUpdate(ModelMap model, @Valid @ModelAttribute("category") CategoryModel cateModel,
 			BindingResult result) {
 		if (result.hasErrors()) {
-			return new ModelAndView("admin/category/add");
+			return new ModelAndView("admin/category/addOrEdit");
 		}
 
 		Category entity = new Category();
@@ -71,7 +71,7 @@ public class CategoryController {
 
 		model.addAttribute("message", message);
 		// Redirect về URL controller
-		return new ModelAndView("forward:/admin/categories", model);
+		return new ModelAndView("forward:/admin/categories/searchpaginated", model);
 	}
 
 	@GetMapping("/edit/{id}")
@@ -84,7 +84,7 @@ public class CategoryController {
 			BeanUtils.copyProperties(entity, cateModel);
 			cateModel.setIsEdit(true);
 			model.addAttribute("category", cateModel);
-			return new ModelAndView("admin/category/add", model);
+			return new ModelAndView("admin/category/addOrEdit", model);
 		} else {
 			model.addAttribute("message", "Category is not existed!!!!");
 			return new ModelAndView("forward:/admin/categories", model);
@@ -95,7 +95,7 @@ public class CategoryController {
 	public ModelAndView delete(ModelMap model, @PathVariable("id") Long categoryId) {
 		categoryService.deleteById(categoryId);
 		model.addAttribute("message", "Category is deleted!!!!");
-		return new ModelAndView("forward:/admin/categories", model);
+		return new ModelAndView("forward:/admin/categories/searchpaginated", model);
 	}
 
 	@RequestMapping("/searchpaginated")
@@ -126,7 +126,24 @@ public class CategoryController {
 			model.addAttribute("pageNumbers", pageNumbers);
 		}
 		model.addAttribute("categoryPage", resultPage);
-		return "admin/category/list1";
+		return "admin/category/searchpaginated";
 	}
 
+	@GetMapping("search")
+	public String search(ModelMap model, @RequestParam(name = "name", required = false) String name) {
+		
+		List<Category> list = null;
+
+		if (StringUtils.hasText(name)) {
+			list = categoryService.findByNameContaining(name);
+		} else {
+			list = categoryService.findAll();
+		}
+
+		// Thêm danh sách các danh mục vào Model để truyền sang view
+		model.addAttribute("categories", list);
+
+		// Trả về tên của view để hiển thị kết quả
+		return "admin/categories/search";
+	}
 }

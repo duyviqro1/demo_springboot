@@ -29,6 +29,8 @@ public interface CategoryService {
 
 	Optional<Category> findByName(String name);
 
+	List<Category> findByNameContaining(String name);
+
 	
 
 

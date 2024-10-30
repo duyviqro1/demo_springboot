@@ -9,11 +9,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import io.micrometer.common.util.StringUtils;
 import vn.iotstar.entity.Category;
 import vn.iotstar.repository.CategoryRepository;
 
 @Service
-public class CategoryServiceImpl implements CategoryService{
+public class CategoryServiceImpl implements CategoryService {
 
 	@Autowired
 	CategoryRepository categoryRepository;
@@ -34,7 +35,20 @@ public class CategoryServiceImpl implements CategoryService{
 
 	@Override
 	public <S extends Category> S save(S entity) {
-		return categoryRepository.save(entity);
+		if (entity.getId() == null) {
+			return categoryRepository.save(entity);
+		} else {
+			Optional<Category> opt = findById(entity.getId());
+			if (opt.isPresent()) {
+				if (StringUtils.isEmpty(entity.getName())) {
+					entity.setName(opt.get().getName());
+				} else {
+					// lấy lại images cũ
+					entity.setName(entity.getName());
+				}
+			}
+			return categoryRepository.save(entity);
+		}
 	}
 
 	@Override
@@ -67,7 +81,9 @@ public class CategoryServiceImpl implements CategoryService{
 		categoryRepository.deleteById(id);
 	}
 
-	
-	
-	
+	@Override
+	public List<Category> findByNameContaining(String name) {
+		return categoryRepository.findByNameContaining(name);
+	}
+
 }
